@@ -42,6 +42,18 @@ class StaticTests(unittest.TestCase):
     def test_no_authorization_file_committed(self):
         self.assertFalse((ROOT / "trials" / "DEV-USDJPY-SIMPLE-01" / "AUTHORIZATION.json").exists())
 
+    def test_runtime_pinned(self):
+        import re
+        wf = (ROOT / ".github" / "workflows" / "dev-trial.yml").read_text()
+        uses = re.findall(r"uses:\s*(\S+)", wf)
+        self.assertTrue(uses)
+        for u in uses:
+            self.assertRegex(u, r"^[\w.-]+/[\w.-]+@[0-9a-f]{40}$", u)
+        self.assertRegex(wf, r'python-version:\s*"3\.13\.17"')
+        self.assertIn("--require-hashes", wf)
+        req = (ROOT / "requirements.txt").read_text()
+        self.assertRegex(req, r"numpy==2\.5\.3 \\\n\s+--hash=sha256:[0-9a-f]{64}\s*$")
+
     def test_workflow_dispatch_only(self):
         wf = (ROOT / ".github" / "workflows" / "dev-trial.yml").read_text()
         self.assertIn("workflow_dispatch", wf)

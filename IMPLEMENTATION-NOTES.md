@@ -1,4 +1,4 @@
-# DEV-USDJPY-SIMPLE-01 — Implementation Notes (candidate v0.1)
+# DEV-USDJPY-SIMPLE-01 — Implementation Notes (candidate v0.2)
 
 Points where the implementation had to fix a detail the spec does not spell out. Each is flagged
 for むすび's implementation audit; none was chosen after seeing any Development value (none has
@@ -79,5 +79,13 @@ been computed on the real snapshot).
   The workflow writes to the runner temp dir and uploads as an Actions artifact; nothing is
   committed back.
 
-## I-7 Environment
-- Python 3.13, numpy 2.5.3 (pinned in the workflow; local tests ran with the same versions).
+## I-7 Environment (candidate v0.2: runtime pinning, Freeze-prep v0.1 §3.5; F-FC-1 option A)
+- Python 3.13.17 (`setup-python` exact patch version; stable ubuntu-24.04 x64 build listed in
+  actions/python-versions versions-manifest.json at commit 160ca1e2).
+- numpy 2.5.3 from `requirements.txt`, installed with `--require-hashes --only-binary=:all: --no-deps`.
+  Wheel numpy-2.5.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl, SHA-256
+  a5fa86b8…e25321 confirmed by むすび on the PyPI file page and PyPI provenance (Claude could not reach PyPI).
+- A workflow step stops unless Python == 3.13.17 and numpy == 2.5.3; GATE provenance records both.
+- GitHub Actions pinned by commit SHA, resolved with `git ls-remote` from the tags used before:
+  checkout v4 = v4.4.0 11d5960a…, setup-python v5 = v5.6.0 a26af69b…, upload-artifact v4 = v4.6.2 ea165f8d….
+- Local tests ran on Python 3.13.17 and numpy 2.5.3 (local install not hash-verified).

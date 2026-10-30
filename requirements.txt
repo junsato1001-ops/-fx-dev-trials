@@ -1,0 +1,6 @@
+# DEV-USDJPY-SIMPLE-01 runtime lock (Freeze-prep v0.1 §3.5). Installed with:
+#   python -m pip install --require-hashes --only-binary=:all: --no-deps -r requirements.txt
+# Wheel: numpy-2.5.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+# Hash source: PyPI (primary), confirmed by: むすび, PyPI numpy 2.5.3 file page and provenance subject digest (relayed by 純 2026-10-31 03:37 JST)
+numpy==2.5.3 \
+    --hash=sha256:a5fa86b80fd24bcd1aff83ad23be44ea323de3f787be8f8b15d4a65621e25321
