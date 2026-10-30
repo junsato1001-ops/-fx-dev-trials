@@ -24,7 +24,7 @@ def target_days(mp, start: dt.date, end: dt.date):
     return out
 
 
-def allow_rows(mp, start=dt.date(2014, 1, 2), end=dt.date(2018, 6, 29), seed=7, gaps=()):
+def allow_rows(mp, start=dt.date(2014, 1, 2), end=dt.date(2018, 6, 29), seed=7, gaps=(), flat=None):
     """(date, jpy, usd) rows: USD/JPY is a random walk with a weak AR(1) momentum component."""
     rng = np.random.Generator(np.random.PCG64(seed))
     days = target_days(mp, start, end)
@@ -34,7 +34,9 @@ def allow_rows(mp, start=dt.date(2014, 1, 2), end=dt.date(2018, 6, 29), seed=7, 
     rows = []
     for d in days:
         drift = 0.97 * drift + 0.0006 * rng.standard_normal()
-        lp += drift + 0.006 * rng.standard_normal()
+        step = drift + 0.006 * rng.standard_normal()
+        if flat is None or not (flat[0] <= d <= flat[1]):
+            lp += step  # inside `flat` the price is held constant (F_MOM == 0 exactly after 20 days)
         jpy = usd * math.exp(lp)
         if d in gaps:
             rows.append((d, None, usd))

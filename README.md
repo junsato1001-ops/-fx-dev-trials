@@ -28,6 +28,8 @@ Specs: `DEV-USDJPY-SIMPLE-01-SPEC-V0.3.draft.md` and `...-FREEZE-PREP-V0.1.draft
 - `devtrial/frozen.py` — vendor verification and loading.
 - `devtrial/model.py` — ledger, S0 pools, F_MOM, prequential beta, decision classes, losses.
 - `devtrial/stats.py` — stationary bootstrap, p-values, HAC, half split.
+- `devtrial/summary.py` — challenger Point/PI/class probabilities (S0 verbatim when mu = 0).
+- `devtrial/diagnostics.py` — report-only §10 diagnostics (not used by the Gate).
 - `devtrial/run.py` — `selftest` | `preflight` | `run`.
 - `tests/` — synthetic data only; no test opens the snapshot.
 - `.github/workflows/dev-trial.yml` — `workflow_dispatch` only.

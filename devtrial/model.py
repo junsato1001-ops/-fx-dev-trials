@@ -68,6 +68,14 @@ def regenerate_s0(s0mod, string_rows):
 
 # --------------------------------------------------------------------------- features
 
+def f_mom_base_date(mp, v: dt.date, window: int) -> dt.date:
+    """v - window TARGET publication days (the base fix date of F_MOM)."""
+    x = v
+    for _ in range(window):
+        x = mp.previous_target_day(x)
+    return x
+
+
 def f_mom(mp, series, v: dt.date, window: int):
     """log(P(v)/P(v20)); None if either fix is not in the USD/JPY series."""
     if v not in series:
@@ -192,7 +200,8 @@ def run_model(cfg, m0, mp, s0mod, lb, allow_rows, return_pool_source=False):
         sig = float(r["Sigma_H"]) if r["Sigma_H"] else None
         y = float(r["Realized_LogReturn"]) if r["Realized_LogReturn"] else None
         fm = f_mom(mp, series, laf, window) if laf is not None else None
-        recs.append({"origin": origin, "laf": laf, "target_end": tend, "sigma": sig, "y": y,
+        base = f_mom_base_date(mp, laf, window) if laf is not None else None
+        recs.append({"origin": origin, "laf": laf, "f_mom_base_fix": base, "target_end": tend, "sigma": sig, "y": y,
                      "outcome": r["Outcome_Status"], "prereq": r["Prereq_Status"],
                      "s0_class": so["Decision_Class"], "s0_reason": so["Reason_Code"],
                      "pool_n": pool_n.get(r["Origin"]), "f_mom": fm, "s0_row": so})
@@ -278,7 +287,9 @@ def run_model(cfg, m0, mp, s0mod, lb, allow_rows, return_pool_source=False):
             rec["class"] = "MODEL_PREREQ_UNAVAILABLE"; rec["reason"] = "FEATURE_PREREQ_UNAVAILABLE"
             continue
         rec["class"] = "FORECAST"
-        rec["mu"] = rec["beta"] * rec["f_mom"]
+        mu = rec["beta"] * rec["f_mom"]
+        # SPEC v0.3 §3.2 / MODEL-PART1-V1 §3: mu == 0 (beta == 0 or F == 0) is exactly S0.
+        rec["mu"] = 0.0 if mu == 0.0 else mu
         if rec["sigma"] is None or not (rec["sigma"] > 0):
             rec["metric"] = "METRIC_UNDEFINED_ZERO_SCALE"
             continue
@@ -287,7 +298,10 @@ def run_model(cfg, m0, mp, s0mod, lb, allow_rows, return_pool_source=False):
         z = np.sort(cand[:rec["pool_n"]], kind="stable")
         x = rec["sigma"] * z
         rec["loss_s0"] = crps_sorted(x, rec["y"]) / rec["sigma"]
-        rec["loss_ch"] = crps_sorted(x + rec["mu"], rec["y"]) / rec["sigma"]
+        if rec["mu"] == 0.0:
+            rec["loss_ch"] = rec["loss_s0"]  # identical distribution -> identical loss (d = 0 exactly)
+        else:
+            rec["loss_ch"] = crps_sorted(x + rec["mu"], rec["y"]) / rec["sigma"]
         rec["metric"] = "ELIGIBLE"
     if return_pool_source:
         return recs, cand

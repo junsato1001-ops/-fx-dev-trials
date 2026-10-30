@@ -1,4 +1,4 @@
-# DEV-USDJPY-SIMPLE-01 — Implementation Notes (candidate)
+# DEV-USDJPY-SIMPLE-01 — Implementation Notes (candidate v0.1)
 
 Points where the implementation had to fix a detail the spec does not spell out. Each is flagged
 for むすび's implementation audit; none was chosen after seeing any Development value (none has
@@ -17,8 +17,14 @@ been computed on the real snapshot).
 - Pools are regenerated as in V1 `m1macro/s0link.py`: `empirical_summary` is wrapped to capture
   `len(sorted_z)` and checked against `Pool_N`; pool at origin t = `sort(cand[:Pool_N_t])` where
   `cand` is `_candidate_pool_source(group)` order. The S0 output itself is the frozen function's.
-- Test `test_s0_point_matches_frozen_output`: with mu = 0 the challenger row reproduces S0 point,
-  PI10/PI90 and P_Down/Neutral/Up (synthetic data).
+- Exact S0 identity (SPEC v0.3 §3.2; MODEL-PART1-V1 §3), revised in candidate v0.1: whenever
+  mu == 0 (DEFAULT_PARENT, ESTIMATED with beta == 0, or F_MOM == 0) the challenger Point / PI10 /
+  PI90 / P_Down / P_Neutral / P_Up are the frozen S0 output strings verbatim (`Source = S0_VERBATIM`),
+  mu is stored as +0.0, and loss_ch is set to loss_s0 (d = 0 exactly). Tests compare strings with
+  assertEqual for all three cases (`test_default_parent_exact_s0`, `test_estimated_beta_zero_exact_s0`,
+  `test_f_mom_zero_exact_s0`).
+- mu != 0: x'_i = sigma Z_i + mu; Point = sigma * fsum(Z)/N + mu (same mean as S0); PI by S0 ranks;
+  classes counted on x' against b = 0.25 sigma. All numbers are serialized with S0's `f17`.
 
 ## I-3 Decision classes
 - S0 `NOT_APPLICABLE` is passed through as `NOT_APPLICABLE` (reason = S0 reason), not mapped to
@@ -59,6 +65,17 @@ been computed on the real snapshot).
 ## I-6 Outputs
 - preflight: dates, counts and states only (test checks no float appears).
 - run: GATE.json and ROWS.jsonl (in-scope rows). Existing artifacts are never overwritten.
+- GATE.json `diagnostics` (candidate v0.1; SPEC v0.3 §10 "必ず報告するもの"; never used by the Gate,
+  computed also when NOT_EVALUABLE): Coverage per EVAL §4.2 for both models; DEFAULT_PARENT and
+  METRIC_UNDEFINED_ZERO_SCALE counts; beta trajectory summary; RPS, Multiclass Brier, IS/sigma,
+  PI80 coverage, Deterministic VRC (EVAL §3.2-§3.4) and direction diagnostics, each for challenger
+  and S0, on the Gate sample (ESTIMATED) and the full common sample. Definitions in
+  `devtrial/diagnostics.py` docstring.
+  **Interpretation flag:** the direction diagnostics (modal-class hit with ties excluded and counted,
+  point-sign hit excluding zeros, mean probability of the realized class) are not defined in any
+  frozen document; they are fixed here before any result and are descriptive only.
+- GATE.json `provenance` (§13): snapshot, config, devtrial code and vendor SHA-256; numpy/python versions.
+- ROWS.jsonl FORECAST rows carry F_MOM_Fix_Date (v) and F_MOM_Base_Fix_Date (v − 20 TARGET days) (§13).
   The workflow writes to the runner temp dir and uploads as an Actions artifact; nothing is
   committed back.
 

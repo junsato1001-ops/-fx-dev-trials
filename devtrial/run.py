@@ -21,7 +21,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from devtrial import frozen, model, reader, stats  # noqa: E402
+from devtrial import diagnostics, frozen, model, reader, stats, summary  # noqa: E402
 
 TRIAL_DIR = ROOT / "trials" / "DEV-USDJPY-SIMPLE-01"
 
@@ -135,19 +135,30 @@ def gate(cfg: dict, recs) -> dict:
 
 
 def challenger_row(r, s0mod, cand) -> dict:
-    """Prediction row fields (SPEC v0.3 §13). For FORECAST rows only."""
-    z = np.sort(cand[:r["pool_n"]], kind="stable")
-    n = z.size
-    k10, k90 = s0mod.quantile_ranks(n)
-    sig, mu = r["sigma"], r["mu"]
-    x = sig * z + mu
-    b = 0.25 * sig
-    left = int(np.searchsorted(x, -b, side="left"))
-    right = int(np.searchsorted(x, b, side="right"))
-    return {"Origin": r["origin"].isoformat(), "Decision_Class": r["class"], "Parameter_State": r["param_state"],
-            "Beta": r["beta"], "F_MOM": r["f_mom"], "Mu": mu, "Sigma_M0": sig, "Pool_N": n,
-            "Point": sig * float(z.sum()) / n + mu, "PI10": float(x[k10 - 1]), "PI90": float(x[k90 - 1]),
-            "P_Down": left / n, "P_Neutral": (right - left) / n, "P_Up": (n - right) / n}
+    """Prediction row fields (SPEC v0.3 §13) for a FORECAST row; numbers as S0 f17 strings."""
+    f = s0mod.f17
+    out = {"Beta": f(r["beta"]), "F_MOM": f(r["f_mom"]), "F_MOM_Fix_Date": r["laf"].isoformat(),
+           "F_MOM_Base_Fix_Date": r["f_mom_base_fix"].isoformat(), "Mu": f(r["mu"]),
+           "Sigma_M0": f(r["sigma"]), "Pool_N": str(r["pool_n"])}
+    out.update(summary.challenger_summary(r, cand, s0mod))
+    return out
+
+
+def provenance(cfg: dict) -> dict:
+    """§13: snapshot and code SHA-256 recorded with the Gate."""
+    code = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "devtrial").glob("*.py"))
+    return {"snapshot_sha256": frozen.sha256_file(ROOT / cfg["snapshot"]["path"]),
+            "config_sha256": frozen.sha256_file(frozen.CONFIG),
+            "code_sha256": {c: frozen.sha256_file(ROOT / c) for c in code},
+            "vendor_sha256": {c: frozen.sha256_file(ROOT / c) for c in sorted(cfg["vendor_sha256"])},
+            "numpy_version": np.__version__, "python_version": sys.version.split()[0]}
+
+
+def gate_record(cfg: dict, recs, cand, s0mod) -> dict:
+    res = gate(cfg, recs)
+    res["diagnostics"] = diagnostics.diagnostics(recs, cand, s0mod)
+    res["provenance"] = provenance(cfg)
+    return res
 
 
 def main() -> int:
@@ -175,7 +186,7 @@ def main() -> int:
     # mode == "run"
     allow, m0, mp, s0, lb = load_inputs(cfg)
     recs, cand = model.run_model(cfg, m0, mp, s0, lb, allow, return_pool_source=True)
-    res = gate(cfg, recs)
+    res = gate_record(cfg, recs, cand, s0)
     res["authorization"] = {k: auth[k] for k in ("freeze_commit", "authorized_by", "authorized_at_jst")}
     gp = out_dir / "DEV-USDJPY-SIMPLE-01-GATE.json"
     rp = out_dir / "DEV-USDJPY-SIMPLE-01-ROWS.jsonl"
@@ -187,7 +198,8 @@ def main() -> int:
                 continue
             row = {"Origin": r["origin"].isoformat(), "Decision_Class": r["class"], "Reason_Code": r["reason"],
                    "S0_Decision_Class": r["s0_class"], "Parameter_State": r["param_state"], "N_E": r["n_E"],
-                   "Metric_Status": r["metric"], "Loss_Challenger": r["loss_ch"], "Loss_S0": r["loss_s0"]}
+                   "Metric_Status": r["metric"], "Loss_Challenger": s0.f17(r["loss_ch"]),
+                   "Loss_S0": s0.f17(r["loss_s0"])}
             if r["class"] == "FORECAST":
                 row.update(challenger_row(r, s0, cand))
             f.write(json.dumps(row, sort_keys=True) + "\n")
