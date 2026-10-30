@@ -1,0 +1,36 @@
+name: dev-trial
+# DEV-USDJPY-SIMPLE-01. Manual dispatch only. No schedule, no push trigger, no Forward.
+# preflight / run stop unless trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json exists in the
+# dispatched commit and lists the mode (it does not exist in the implementation candidate).
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "selftest | preflight | run"
+        required: true
+        default: selftest
+        type: choice
+        options: [selftest, preflight, run]
+permissions:
+  contents: read
+jobs:
+  trial:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install numpy==2.5.3
+      - name: Authorization guard
+        if: inputs.mode != 'selftest'
+        run: test -f trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json || { echo "NOT AUTHORIZED"; exit 1; }
+      - name: Run
+        run: python devtrial/run.py "${{ inputs.mode }}" --out "$RUNNER_TEMP/out"
+      - name: Upload artifacts
+        if: inputs.mode != 'selftest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-usdjpy-simple-01-${{ inputs.mode }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/out
+          if-no-files-found: error

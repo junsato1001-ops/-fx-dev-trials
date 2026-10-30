@@ -1,0 +1,46 @@
+{
+  "schema_version": "DEV_TRIAL_CONFIG_V1",
+  "trial_id": "DEV-USDJPY-SIMPLE-01",
+  "classification": "DEVELOPMENT DIAGNOSTIC TRIAL (not confirmatory; not Forward)",
+  "spec": {
+    "file": "junsato1001-ops/-fx-forward-ledger drafts/DEV-USDJPY-SIMPLE-01-SPEC-V0.3.draft.md",
+    "commit": "17cc7c6d7c2489038bbffd07b95fd3db1d1697ac",
+    "git_blob": "647fcc19fd1c8624bee0fed369bab07b53de237f",
+    "sha256": "13e7e3306050d39e47cd669a075f3aaa1caf15e33619894885a70f5f5a191bab"
+  },
+  "freeze_prep": {
+    "file": "junsato1001-ops/-fx-forward-ledger drafts/DEV-USDJPY-SIMPLE-01-FREEZE-PREP-V0.1.draft.md",
+    "commit": "fb4381e73c9d877d55f9d8f13d974b59882d28d8",
+    "git_blob": "bb3617b8a2f7eb0481d95d5d98f53d134b8e2fa4",
+    "sha256": "b6f545de900a5bc03c630b8b109dec2d789bd860b2af837eb6b7935949d2a917"
+  },
+  "snapshot": {
+    "path": "data/eurofxref-hist_20261009.zip",
+    "sha256": "f36e0affc225bc572cc589d4183352c5815f178769f04c2b27a452567c6f7649",
+    "member": "eurofxref-hist.csv",
+    "source": "junsato1001-ops/-fx-forward-ledger tests/fixtures/eurofxref-hist_20261009.zip at 17cc7c6d"
+  },
+  "vendor_sha256": {
+    "vendor/v1/frozen/m0_walkforward_v1_2.py": "4ca2f37ab729d08f24f008d75c5ceb95f11d79d5bf9575941f44ffd32a77e3d5",
+    "vendor/v1/frozen/origin_target_map_v1.py": "902f0b43a84a0ec309a6e99b6617ca2816e240054bd77e9dbf7d3b2812f3c988",
+    "vendor/v1/frozen/s0_empclim_std_exp_v1_1.py": "84c317661e6798b906063a50fc416c9d594708ffcfbb6010a5bd83f636487676",
+    "vendor/v1/forward/ledger_builder.py": "5d3b91c7a666b9f7d5c12db88dbbf969ebceef5386bbabb22f13e3e907de25a0"
+  },
+  "pair": "USDJPY",
+  "pair_components": {"numerator": "JPY", "denominator": "USD"},
+  "allowlist_columns": ["Date", "JPY", "USD"],
+  "horizon": "1D",
+  "development_target_end_max": "2026-10-09",
+  "f_mom_window_target_days": 20,
+  "n_warmup": 250,
+  "n_eval_min": 250,
+  "alpha_dev": 0.05,
+  "bootstrap": {
+    "replicates": 10000,
+    "seed": 20261016,
+    "primary_mean_block_length": 4,
+    "sensitivity_mean_block_length": 12
+  },
+  "hac_lag": 4,
+  "authorization_file": "trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json"
+}
