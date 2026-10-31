@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CONFIG = ROOT / "trials" / "DEV-USDJPY-SIMPLE-01" / "config.json"
+CONFIG = ROOT / "trials" / "DEV-USDJPY-SIMPLE-02" / "config.json"
 
 
 class FrozenMismatch(RuntimeError):

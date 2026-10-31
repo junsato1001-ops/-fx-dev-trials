@@ -1,4 +1,4 @@
-"""DEV-USDJPY-SIMPLE-01 entry point.
+"""DEV-USDJPY-SIMPLE-02 entry point.
 
 Modes:
   selftest   offline tests on synthetic data only (no snapshot is read)
@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from devtrial import diagnostics, frozen, model, reader, stats, summary  # noqa: E402
 
-TRIAL_DIR = ROOT / "trials" / "DEV-USDJPY-SIMPLE-01"
+TRIAL_DIR = ROOT / "trials" / "DEV-USDJPY-SIMPLE-02"
 
 
 def _sha_bytes(b: bytes) -> str:
@@ -177,7 +177,7 @@ def main() -> int:
     if args.mode == "preflight":
         res = preflight(cfg)
         res["authorization"] = {k: auth[k] for k in ("freeze_commit", "authorized_by", "authorized_at_jst")}
-        p = out_dir / "DEV-USDJPY-SIMPLE-01-PREFLIGHT.json"
+        p = out_dir / "DEV-USDJPY-SIMPLE-02-PREFLIGHT.json"
         if p.exists():
             raise SystemExit("preflight artifact already exists; not overwritten")
         p.write_text(json.dumps(res, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -188,8 +188,8 @@ def main() -> int:
     recs, cand = model.run_model(cfg, m0, mp, s0, lb, allow, return_pool_source=True)
     res = gate_record(cfg, recs, cand, s0)
     res["authorization"] = {k: auth[k] for k in ("freeze_commit", "authorized_by", "authorized_at_jst")}
-    gp = out_dir / "DEV-USDJPY-SIMPLE-01-GATE.json"
-    rp = out_dir / "DEV-USDJPY-SIMPLE-01-ROWS.jsonl"
+    gp = out_dir / "DEV-USDJPY-SIMPLE-02-GATE.json"
+    rp = out_dir / "DEV-USDJPY-SIMPLE-02-ROWS.jsonl"
     if gp.exists() or rp.exists():
         raise SystemExit("run artifacts already exist; not overwritten")
     with rp.open("w", encoding="utf-8") as f:

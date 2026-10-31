@@ -1,4 +1,4 @@
-"""DEV-USDJPY-SIMPLE-01 model layer (SPEC v0.3 §2-§7; Freeze-prep v0.1 §2-§3).
+"""DEV-USDJPY-SIMPLE-02 model layer (SPEC v0.3 §2-§7; Freeze-prep v0.1 §2-§3).
 
 Pipeline (all point-in-time, USD/JPY 1D only):
 1. allowlist rows (Date, JPY, USD) -> USD/JPY series and the full date list `obs`.

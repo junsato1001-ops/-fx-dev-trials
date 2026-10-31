@@ -1,6 +1,6 @@
 name: dev-trial
-# DEV-USDJPY-SIMPLE-01. Manual dispatch only. No schedule, no push trigger, no Forward.
-# preflight / run stop unless trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json exists in the
+# DEV-USDJPY-SIMPLE-02. Manual dispatch only. No schedule, no push trigger, no Forward.
+# preflight / run stop unless trials/DEV-USDJPY-SIMPLE-02/AUTHORIZATION.json exists in the
 # dispatched commit and lists the mode (it does not exist in the implementation candidate).
 on:
   workflow_dispatch:
@@ -23,19 +23,19 @@ jobs:
         with:
           python-version: "3.13.17"
       - name: Install locked dependencies (hash-checked)
-        run: python -m pip install --require-hashes --only-binary=:all: --no-deps -r requirements.txt
+        run: "python -m pip install --require-hashes --only-binary=:all: --no-deps -r requirements.txt"
       - name: Verify runtime versions
         run: |
           python -c "import sys, numpy; v = sys.version.split()[0]; assert v == '3.13.17', v; assert numpy.__version__ == '2.5.3', numpy.__version__; print('python', v, 'numpy', numpy.__version__)"
       - name: Authorization guard
         if: inputs.mode != 'selftest'
-        run: test -f trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json || { echo "NOT AUTHORIZED"; exit 1; }
+        run: test -f trials/DEV-USDJPY-SIMPLE-02/AUTHORIZATION.json || { echo "NOT AUTHORIZED"; exit 1; }
       - name: Run
         run: python devtrial/run.py "${{ inputs.mode }}" --out "$RUNNER_TEMP/out"
       - name: Upload artifacts
         if: inputs.mode != 'selftest'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
-          name: dev-usdjpy-simple-01-${{ inputs.mode }}-${{ github.run_id }}
+          name: dev-usdjpy-simple-02-${{ inputs.mode }}-${{ github.run_id }}
           path: ${{ runner.temp }}/out
           if-no-files-found: error

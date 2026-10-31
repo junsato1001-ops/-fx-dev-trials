@@ -1,6 +1,7 @@
 {
   "schema_version": "DEV_TRIAL_CONFIG_V1",
-  "trial_id": "DEV-USDJPY-SIMPLE-01",
+  "trial_id": "DEV-USDJPY-SIMPLE-02",
+  "supersedes": "DEV-USDJPY-SIMPLE-01 (ABORT, V1 preregistration/DEV-TRIAL-REGISTRY.csv Event_Seq 2: frozen workflow not loadable; no execution)",
   "classification": "DEVELOPMENT DIAGNOSTIC TRIAL (not confirmatory; not Forward)",
   "spec": {
     "file": "junsato1001-ops/-fx-forward-ledger drafts/DEV-USDJPY-SIMPLE-01-SPEC-V0.3.draft.md",
@@ -42,5 +43,5 @@
     "sensitivity_mean_block_length": 12
   },
   "hac_lag": 4,
-  "authorization_file": "trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json"
+  "authorization_file": "trials/DEV-USDJPY-SIMPLE-02/AUTHORIZATION.json"
 }

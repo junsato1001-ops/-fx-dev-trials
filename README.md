@@ -3,22 +3,25 @@
 Development diagnostic trials for the FX forecasting project. Separate from the V1 ledger
 (`-fx-forward-ledger`, never modified) and the V2 pipeline (`-fx-forward-ledger-v2`).
 
-## DEV-USDJPY-SIMPLE-01 — status
+## DEV-USDJPY-SIMPLE-02 — status
+
+Successor of DEV-USDJPY-SIMPLE-01 (ABORT before execution: workflow YAML not loadable). Same scientific
+spec, model and Gate; only the YAML quoting fix, a YAML parse test and Trial ID changes.
 
 | Item | State |
 |---|---|
-| Branch `impl/dev-usdjpy-simple-01` | Implementation Candidate (not merged to `main`) |
+| Branch `impl/dev-usdjpy-simple-02` | Implementation Candidate (not merged to `main`) |
 | Freeze | NOT APPROVED |
 | Preflight (Freeze-prep v0.1 §5.2) | NOT AUTHORIZED |
 | Development run / Gate | NOT AUTHORIZED |
 | Forward | Out of scope for this repository state |
 
-`preflight` and `run` refuse to start unless `trials/DEV-USDJPY-SIMPLE-01/AUTHORIZATION.json`
+`preflight` and `run` refuse to start unless `trials/DEV-USDJPY-SIMPLE-02/AUTHORIZATION.json`
 exists and lists the mode. That file is not part of this candidate. The authorization check runs
 before the snapshot is opened.
 
 Specs: `DEV-USDJPY-SIMPLE-01-SPEC-V0.3.draft.md` and `...-FREEZE-PREP-V0.1.draft.md` in
-`-fx-forward-ledger/drafts/` (commits, blobs and SHA-256 in `trials/DEV-USDJPY-SIMPLE-01/config.json`).
+`-fx-forward-ledger/drafts/` (commits, blobs and SHA-256 in `trials/DEV-USDJPY-SIMPLE-02/config.json`).
 
 ## Layout
 

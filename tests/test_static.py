@@ -31,7 +31,7 @@ class StaticTests(unittest.TestCase):
                 self.assertNotIn(code, text, f"{code} in {p.relative_to(ROOT)}")
 
     def test_tests_do_not_reference_snapshot(self):
-        cfg_path = (ROOT / "trials" / "DEV-USDJPY-SIMPLE-01" / "config.json").read_text()
+        cfg_path = (ROOT / "trials" / "DEV-USDJPY-SIMPLE-02" / "config.json").read_text()
         snap = __import__("json").loads(cfg_path)["snapshot"]["path"]
         for p in (ROOT / "tests").glob("*.py"):
             text = p.read_text(encoding="utf-8")
@@ -40,7 +40,7 @@ class StaticTests(unittest.TestCase):
                 self.assertNotIn(c, text)
 
     def test_no_authorization_file_committed(self):
-        self.assertFalse((ROOT / "trials" / "DEV-USDJPY-SIMPLE-01" / "AUTHORIZATION.json").exists())
+        self.assertFalse((ROOT / "trials" / "DEV-USDJPY-SIMPLE-02" / "AUTHORIZATION.json").exists())
 
     def test_runtime_pinned(self):
         import re

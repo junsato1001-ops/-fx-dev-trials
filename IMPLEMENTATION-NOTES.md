@@ -1,4 +1,9 @@
-# DEV-USDJPY-SIMPLE-01 — Implementation Notes (candidate v0.2)
+# DEV-USDJPY-SIMPLE-02 — Implementation Notes
+
+DEV-USDJPY-SIMPLE-02 = DEV-USDJPY-SIMPLE-01 implementation a7921007 with only: the workflow YAML
+quoting fix (I-8), a YAML parse regression test, and Trial ID mechanical changes. DEV-USDJPY-SIMPLE-01
+was ABORTed before any job ran (V1 DEV-TRIAL-REGISTRY Event_Seq 2). Sections I-1 to I-7 are unchanged
+from the 01 candidate v0.2 and apply to 02.
 
 Points where the implementation had to fix a detail the spec does not spell out. Each is flagged
 for むすび's implementation audit; none was chosen after seeing any Development value (none has
@@ -89,3 +94,11 @@ been computed on the real snapshot).
 - GitHub Actions pinned by commit SHA, resolved with `git ls-remote` from the tags used before:
   checkout v4 = v4.4.0 11d5960a…, setup-python v5 = v5.6.0 a26af69b…, upload-artifact v4 = v4.6.2 ea165f8d….
 - Local tests ran on Python 3.13.17 and numpy 2.5.3 (local install not hash-verified).
+
+## I-8 Workflow YAML (DEV-USDJPY-SIMPLE-02)
+- 01's workflow line `run: python -m pip install --require-hashes --only-binary=:all: --no-deps -r requirements.txt`
+  was not valid YAML (`: ` inside a plain scalar); GitHub could not load the workflow. The value is now a
+  double-quoted scalar with identical content.
+- `tests/test_workflow_yaml.py`: (1) always: every single-line `run:` value containing `: ` must be quoted;
+  (2) when PyYAML is installed (local audit environment; not installed in CI, where the test is skipped):
+  full parse, triggers == {workflow_dispatch} only, the install command string equals the frozen command.
