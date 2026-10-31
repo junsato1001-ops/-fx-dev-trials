@@ -1,0 +1,16 @@
+{
+  "trial_id": "DEV-USDJPY-SIMPLE-01",
+  "modes": ["preflight"],
+  "freeze_commit": "d00e348d7d6bf229b30fc284f2802c65ead101c5",
+  "registry_commit": "cb276490bd7c57a2fccb6ce06afb53b47b68e695",
+  "implementation_commit": "a792100770aac264dab2a996aa2af04e92db1984",
+  "implementation_tree": "29d72c501dc49b2e5602e7fc1ec6c873ea2f7088",
+  "authorized_by": "純 (preflight only; Development NOT authorized)",
+  "authorized_at_jst": "2026-10-31T18:53:00+09:00",
+  "boundary_ruling": {
+    "file": "junsato1001-ops/-fx-forward-ledger drafts/DEV-USDJPY-SIMPLE-01-PREFLIGHT-BOUNDARY-RULING.md",
+    "commit": "ce89162cdfc07dbff2263b6a2dd1d841c021adc0",
+    "git_blob_sha1": "1ebe5a5e8bdc6d9f787c02ff41206b920e2afeb6",
+    "sha256": "406316a6bd4e17eadcb2079c47475fddea34e6d642d03c93bf164b1d3393ec08"
+  }
+}
